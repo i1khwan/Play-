@@ -430,8 +430,27 @@ void CGSH_Vulkan::CreateDevice(VkPhysicalDevice physicalDevice)
 
 	std::vector<const char*> enabledExtensions;
 	enabledExtensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+
+	bool hasShaderInterlock = false;
 #if GSH_VULKAN_IS_DESKTOP
-	enabledExtensions.push_back(VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME);
+	{
+		uint32_t extCount = 0;
+		m_instance.vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extCount, nullptr);
+		std::vector<VkExtensionProperties> extProps(extCount);
+		m_instance.vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extCount, extProps.data());
+		for(const auto& ext : extProps)
+		{
+			if(strcmp(ext.extensionName, VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME) == 0)
+			{
+				hasShaderInterlock = true;
+				break;
+			}
+		}
+	}
+	if(hasShaderInterlock)
+	{
+		enabledExtensions.push_back(VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME);
+	}
 #endif
 
 	std::vector<const char*> enabledLayers;
@@ -439,6 +458,7 @@ void CGSH_Vulkan::CreateDevice(VkPhysicalDevice physicalDevice)
 	Framework::Vulkan::CStructChain createDeviceStructs;
 
 #if GSH_VULKAN_IS_DESKTOP
+	if(hasShaderInterlock)
 	{
 		auto physicalDeviceFeaturesInvocationInterlock = Framework::Vulkan::PhysicalDeviceFragmentShaderInterlockFeaturesEXT();
 		physicalDeviceFeaturesInvocationInterlock.fragmentShaderPixelInterlock = VK_TRUE;

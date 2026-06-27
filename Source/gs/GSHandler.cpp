@@ -402,7 +402,7 @@ void CGSHandler::SetVBlank()
 {
 	{
 		Finish();
-		Flip();
+		Flip(FLIP_FLAG_FORCE);
 	}
 
 	std::lock_guard registerMutexLock(m_registerMutex);

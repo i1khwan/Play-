@@ -23,8 +23,8 @@
 		},
 		{
 			"address": "0x001c2b0c",
-			"value": "0x24027FFF",
-			"description": "Set audio level to 7 /OK"
+			"value": "0x24025000",
+			"description": "Set audio level to 5 /Reduced to prevent clipping"
 		},
 		{
 			"address": "0x00104d7c",
